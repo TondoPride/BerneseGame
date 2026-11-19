@@ -904,7 +904,7 @@ function cands(){const L=[],d=cur.d;
  if(isB()&&DIG[cur.key])for(const sp of DIG[cur.key])L.push({x:sp[0]+.5,y:sp[1]+.5,label:'Dig',name:'Muddy Patch',act:()=>digAct(sp),r:0.75});
  if(sv&&sv.room===cur.key&&!sv.pending&&sv.state==='dazed')L.push({x:sv.x,y:sv.y,label:'Yank',name:'Drain Cap',act:svYank,r:1.45,pri:true});
  for(const n of npcList())L.push({x:n.x,y:n.y,label:'Sniff',name:n.who==='J'?'Jackson':n.who==='June'?'June':'Chuck',act:()=>showMsg(n.msg||[n.who==='J'?"Jackson licks Chuck's entire face. He's still staring at the dryer.":"Chuck sniffs Jackson's ear thoroughly. Then he stares at the dryer again."])});
- for(const o of roomObjs())if(objVisible(o))L.push({x:o.x+.5,y:o.y+.5,label:o.kind==='file'?'Read':(o.noPick?'Sniff':o.id==='c_tuna'?'Swat':'Pick up'),name:o.kind==='file'?FILES[o.file].title:o.kind==='mouse'?'Catnip Mouse':ITEMS[o.item].name,act:()=>takeObj(o),r:o.noPick?0:0});
+ for(const o of roomObjs())if(objVisible(o))L.push({x:o.x+.5,y:o.y+.5,label:o.kind==='file'?'Read':(o.noPick?'Sniff':o.id==='c_tuna'?'Swat':'Pick up'),name:o.kind==='file'?FILES[o.file].title:o.kind==='mouse'?'Catnip Mouse':ITEMS[o.item].name,act:()=>takeObj(o),item:!o.noPick,z:o.z||0});
  for(const ch in d.doors){const p=d.doors[ch];const D=DOORS[ch];L.push({x:p.x+.5,y:p.y+.5,label:D.window?'Climb':'Open',name:ch==='M'?'Front Door':D.window?'Window':D.type==='slide'?'Sliding Door':D.type==='gate'?'Side Gate':D.type==='crest'?'Basement Door':'Door',act:()=>doorInteract(ch),far:true});}
  for(const p of cur.push){const cat=p.ch==='L'&&catHere();const tg=pushTarget(p.ch);const climb=p.ch==='U'&&tg&&p.tx===tg.x&&p.ty===tg.y&&!S.flags.stoolUsed;const atDoor=PUSH[p.ch].door&&tg&&p.tx===tg.x&&p.ty===tg.y&&!S.flags[DOORS[PUSH[p.ch].door].flag];L.push({x:p.tx+.5,y:p.ty+.5,label:cat?'Sniff':(climb||atDoor)?'Climb':'Push',name:cat?'June':PUSH[p.ch].name,act:()=>pushInteract(p)});}
  for(let y=0;y<d.H;y++)for(let x=0;x<d.W;x++){const c=d.grid[y][x];const f=FURN[c];if(!f)continue;
@@ -914,6 +914,8 @@ function cands(){const L=[],d=cur.d;
  if(bossActive()&&boss.state!=='intro'){const o=OUTLETS[boss.plug];L.push({x:o[0]+.5,y:o[1]+.5,label:'Unplug',name:'Power Cord',act:unplug,r:1.05,pri:true});}
  return L;}
 function bestCand(){let best=null,bs=1e9;for(const c of cands()){const dx=c.x-S.x,dy=c.y-S.y;const dist=Math.hypot(dx,dy);
+ if(c.item){if(dist<0.85){const s=-1.5+dist*0.1;if(s<bs){bs=s;best=c;}continue;}
+  if(dist>1.65)continue;const dot=(dx*S.fx+dy*S.fy)/dist;if(dot<-0.2)continue;const s=dist-dot*0.6-0.5;if(s<bs){bs=s;best=c;}continue;}
  if(c.r&&dist<c.r){const s=c.pri?-2:-1;if(s<bs){bs=s;best=c;}continue;}
  if(dist>(c.far?1.6:1.35)||dist<0.01)continue;const dot=(dx*S.fx+dy*S.fy)/dist;if(dot<0.25)continue;const s=dist-dot*0.6;if(s<bs){bs=s;best=c;}}return best;}
 
@@ -1270,6 +1272,7 @@ function drawWorld(){const d=cur.d;const cx=(d.W/2-d.H/2)*HW,cy=(d.W/2+d.H/2)*HH
  if(sv&&sv.room===cur.key&&!sv.pending&&sv.state!=='dead')E.push({d:sv.x+sv.y,f:drawSV});
  for(const o of roomObjs())if(o.id==='bigred'&&objVisible(o))E.push({d:o.x+o.y+0.6,f:()=>{const s=P(o.x+.5,o.y+.5,6+Math.sin(T*3)*2);drawItemIcon('bigred',s[0],s[1],1.3);sparkle(s[0]+9,s[1]-10);}});
  E.sort((a,b)=>a.d-b.d);for(const e of E)e.f();
+ if(mode==='play'){const bc=bestCand();if(bc&&bc.item){const p=P(bc.x,bc.y,bc.z||0);const pul=0.5+0.5*Math.sin(T*6);ctx.strokeStyle=`rgba(232,201,122,${0.45+0.4*pul})`;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p[0],p[1],14+pul*3,7+pul*1.5,0,0,7);ctx.stroke();}}
  for(let y=0;y<d.H;y++)for(let x=0;x<d.W;x++){const c=d.grid[y][x];if(c==='#'&&!isBack(x,y))box(x,y,1,1,d.outdoor?18:12,d.outdoor?'#3e3226':shade(d.wall,0.6),0,'#1d1a16');}
  if(mailHand>0&&cur.key==='hall'){const p=P(13,2.5,18);const k=Math.sin(Math.min(1,(1.4-mailHand)/0.5)*Math.PI*0.5)*(mailHand<0.4?mailHand/0.4:1);ctx.fillStyle='#d9b08c';ctx.save();ctx.translate(p[0]-k*22,p[1]);ctx.fillRect(-14,-4,18,8);ctx.fillStyle='#2c3e66';ctx.fillRect(4,-6,12,12);ctx.fillStyle='#eee';ctx.fillRect(-20,-6,12,9);ctx.restore();}
  for(const f of fx){if(f.type==='ring'){const s=P(f.x,f.y,20);const k=(1-f.t/0.5)*(f.big?1.45:1);ctx.strokeStyle=`rgba(255,240,190,${f.t*1.6})`;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(s[0],s[1]+10,20+k*150,(20+k*150)/2,0,0,7);ctx.stroke();}
