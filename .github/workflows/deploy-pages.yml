@@ -1,0 +1,56 @@
+name: Build & deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # also allow manual runs from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; don't cancel a deploy that's in progress.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build site
+        run: |
+          set -euo pipefail
+          # Sanity-check the game file before publishing it.
+          test -s index.html || { echo "::error::index.html is missing or empty"; exit 1; }
+          grep -q '<title>Bernese Hazard</title>' index.html || { echo "::error::index.html doesn't look like the game"; exit 1; }
+          grep -q '</html>' index.html || { echo "::error::index.html looks truncated"; exit 1; }
+
+          # Assemble the site. The game is a single self-contained file.
+          mkdir -p _site
+          cp index.html _site/index.html
+          touch _site/.nojekyll
+          echo "Built site:"; ls -la _site
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
