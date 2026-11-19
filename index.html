@@ -423,7 +423,7 @@ function ominous(){const k=Math.random()*5|0;const t=AC.currentTime+0.05;
  else{for(const [n,d] of[[83,0],[82,0.5],[78,1.0]])mbox(n,t+d,0.02);}}
 function musicTick(){if(!AC||!musG)return;let want=pickTrack();if(mode==='door')want=curTrack;
  if(droneG){const rm=cur&&ROOM_MUSIC[cur.key];const root=mode==='title'||!rm?33:rm[1];const now=AC.currentTime;
-  let dv=0.022;if(mode==='title')dv=0.014;if(curTrack==='safe'||curTrack==='victory'||mode==='results')dv=0.004;if(curTrack==='boss'||curTrack==='chase')dv=0.01;if(mode==='gameover')dv=0.03;if(cur&&cur.key==='basement')dv=0.032;
+  let dv=0;if(cur&&cur.key==='basement'&&mode!=='title'&&curTrack==='dark')dv=0.018;
   droneO[0].frequency.setTargetAtTime(mtof(root),now,0.8);droneO[1].frequency.setTargetAtTime(mtof(root),now,0.8);droneO[2].frequency.setTargetAtTime(mtof(root-12),now,0.8);droneG.gain.setTargetAtTime(dv,now,0.6);
   const tl=tensionLevel();tensO.forEach((o,i)=>o.frequency.setTargetAtTime(mtof(root+36+i),now,0.3));tensG.gain.setTargetAtTime(tl*0.022,now,0.25);}
  if(want!==curTrack){curTrack=want;stepIdx=0;nextNoteT=AC.currentTime+0.08;}

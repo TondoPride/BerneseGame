@@ -44,5 +44,5 @@ Progress is saved by napping in a dog bed. Saves and unlocks are stored in the b
 ## Tech notes
 
 - Plain HTML5 Canvas and JavaScript in one file, with no dependencies.
-- Music and sound effects are generated in code with the Web Audio API, so there are no audio files. Each area has its own ominous theme over a low drone that follows the room's key. A tension layer rises when something is chasing you, and the dog-bed save spots keep a calm safe-room theme.
+- Music and sound effects are generated in code with the Web Audio API, so there are no audio files. Each area has its own ominous theme, and the basement adds a low drone. A tension layer rises when something is chasing you, and the dog-bed save spots keep a calm safe-room theme.
 - Supports keyboard, the standard Gamepad API, and touch controls with a fullscreen and landscape layout on phones.
