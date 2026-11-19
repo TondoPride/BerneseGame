@@ -2,7 +2,7 @@
 
 *A Good Boy Survival Horror.*
 
-A Resident Evil–style isometric survival-horror game about two Bernese Mountain Dogs, Chuck and Jackson, left home alone on a stormy day, and June, the family cat who may be behind all of it.
+A Resident Evil–style isometric survival-horror game about two Bernese Mountain Dogs, Chuck and Jackson, left home alone on a stormy day, and June, the family's grey tiger-striped cat, who may be behind all of it.
 
 The whole game is one self-contained file: `index.html`. There's nothing to install and no build step, and it works offline.
 
