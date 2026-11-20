@@ -38,6 +38,9 @@ A choice in Chuck's story carries over to Jackson's: take the Squeaker Horn, or 
 | Switch inventory tab | Q | LB / RB | Tap the tab |
 | Tank controls | T | View / Back | — |
 | Sound on/off | M | — | ♪ |
+| Text size (Normal / Large / Extra Large) | + / − (or F in inventory) | Y in inventory | Inventory → "Aa Text size" |
+
+You can also change the text size from the title screen ("TEXT SIZE"). Long notes split into pages at bigger sizes, and the setting is remembered.
 
 Progress is saved by napping in a dog bed. Saves and unlocks are stored in the browser you play in (localStorage).
 
